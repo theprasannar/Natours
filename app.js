@@ -1,18 +1,20 @@
 const express = require('express');
 const fs = require('fs');
+const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
+
 const app = express();
 
-//Reading data
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-sample.json`)
-);
-app.get('/api/v1', (req, res) => {
-  res.status(200).json({
-    status: 'Success',
-    data: { tours },
-  });
-});
-const port = 5000;
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
-});
+// 1) MIDDLEWARES
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+app.use(express.json());
+app.use(express.static(`${__dirname}/public`));
+
+// 2) ROUTES
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+module.exports = app;
