@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
-
+const morgan = require('morgan');
 const app = express();
 
 // 1) MIDDLEWARES
