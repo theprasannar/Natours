@@ -45,6 +45,15 @@ module.exports = (err, req, res, next) => {
       const message = `Invalid input data. ${errors.join('. ')}`;
       error = new ErrorHandler(message, 400);
     }
+    if (error.name === 'JsonWenTokenError') {
+      const message = 'json web token is invalid';
+      error = new ErrorHandler(message, 400);
+    }
+    if (error.name === 'TokenExpiredError') {
+      const message = 'json web token is expired';
+      error = new ErrorHandler(message, 400);
+    }
+
     sendProdErrors(error, res);
   }
 };
