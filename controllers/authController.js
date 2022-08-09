@@ -5,6 +5,8 @@ const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const jwt = require('jsonwebtoken');
 const ErrorHandler = require('../utils/ErrorHandler');
 const sendEmail = require('../utils/email');
+const sendToken = require('../utils/jwtToken');
+
 exports.signUp = catchAsyncErrors(async (req, res, next) => {
   const { name, email, password, confirmPassword, passwordChangedAt } =
     req.body;
@@ -16,16 +18,7 @@ exports.signUp = catchAsyncErrors(async (req, res, next) => {
     passwordChangedAt,
   });
 
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRATION,
-  });
-  res.status(200).send({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  sendToken(newUser, 201, res);
 });
 
 exports.logIn = catchAsyncErrors(async (req, res, next) => {
@@ -43,16 +36,7 @@ exports.logIn = catchAsyncErrors(async (req, res, next) => {
   if (!isPasswordMatched) {
     return next(new ErrorHandler('Invalid email or password', 401));
   }
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRATION,
-  });
-  res.status(200).send({
-    status: 'success',
-    token,
-    data: {
-      user: user,
-    },
-  });
+  sendToken(user, 200, res);
 });
 
 //Authentication middlewares
@@ -185,13 +169,7 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRATION,
-  });
-  res.status(200).send({
-    status: 'success',
-    token,
-  });
+  sendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
@@ -200,7 +178,7 @@ exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
 
   // 2) Check if POSTed current password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
-    return next(new AppError('Your current password is wrong.', 401));
+    return next(new ErrorHandler('Your current password is wrong.', 401));
   }
 
   // 3) If so, update password
@@ -210,5 +188,5 @@ exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   // User.findByIdAndUpdate will NOT work as intended!
 
   // 4) Log user in, send JWT
-  createSendToken(user, 200, res);
+  sendToken(user, 200, res);
 });

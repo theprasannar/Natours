@@ -21,15 +21,16 @@ mongoose
   });
 
 //Read JSON file
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf8'));
 
 //import data into databse
 const importData = async () => {
   try {
     await Tour.create(tours);
-  } catch (error) {}
+    console.log('Imported');
+  } catch (error) {
+    console.log(error);
+  }
   process.exit();
 };
 
