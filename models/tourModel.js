@@ -2,7 +2,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const slugify = require('slugify');
-const User = require('../models/userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -126,6 +125,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+//virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 //Document middleware, runs before .save and .create
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
@@ -137,7 +143,9 @@ tourSchema.pre(/^find/, function (next) {
     path: 'guides',
     select: '-__v -passwordChangedAt',
   });
+  next();
 });
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;

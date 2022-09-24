@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 const morgan = require('morgan');
 const errorMiddleware = require('./middlewares/error');
 const rateLimit = require('express-rate-limit');
@@ -32,6 +33,7 @@ app.use(express.static(`${__dirname}/public`));
 // 2) ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
   next(new ErrorHandler('Page Not Found', 404));
