@@ -3,6 +3,9 @@ const {
   isAuthenticatedUser,
   authorizdRole,
 } = require('../controllers/authController');
+
+const reviewRouter = require('./../routes/reviewRoutes');
+
 const {
   getAllTours,
   createTour,
@@ -17,6 +20,8 @@ const {
 const router = express.Router();
 
 // router.param('id', checkID);
+
+router.use('/:tourID/reviews', reviewRouter);
 
 router.route('/get-stats').get(getTourStats);
 
