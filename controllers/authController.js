@@ -70,7 +70,6 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
   }
   // 4) Check if user changed password after the token was issued
   let flag = currentUser.changedPasswordAfter(decodedData.iat);
-  console.log('flag', flag);
   if (flag) {
     return next(
       new ErrorHandler(

@@ -1,5 +1,6 @@
 const express = require('express');
-const fs = require('fs');
+
+// Routers
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');

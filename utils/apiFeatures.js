@@ -1,4 +1,3 @@
-const Tour = require('../models/tourModel');
 class APIFeatures {
   constructor(query, queryStr) {
     this.query = query;
@@ -8,7 +7,7 @@ class APIFeatures {
   filter() {
     const queryObject = { ...this.queryStr };
 
-    //Extracting only "keys" of the data
+    //Extracting only "keys" of the data present in Database
     const excludeFields = ['page', 'sort', 'limit', 'fields'];
     excludeFields.forEach((field) => {
       delete queryObject[field];
@@ -49,7 +48,7 @@ class APIFeatures {
   }
   pagination() {
     const currentPage = this.queryStr.page * 1 || 1;
-    const resultsPerPage = this.queryStr.limit || 3;
+    const resultsPerPage = this.queryStr.limit || 100;
     const skip = resultsPerPage * (currentPage - 1);
 
     this.query = this.query.skip(skip).limit(resultsPerPage);
