@@ -10,6 +10,7 @@ exports.deleteOne = (Model) =>
     }
     res.status(201).json({
       status: 'success',
+      data: null,
     });
   });
 
@@ -44,7 +45,6 @@ exports.createOne = (Model) =>
 exports.getOne = (Model, populateOptions) =>
   catchAsyncErrors(async (req, res, next) => {
     let query = Model.findById(req.params.id);
-    console.log(populateOptions);
     if (populateOptions) {
       query = query.populate(populateOptions);
     }
