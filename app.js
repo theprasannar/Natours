@@ -4,14 +4,22 @@ const express = require('express');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 const morgan = require('morgan');
+const path = require('path');
 const errorMiddleware = require('./middlewares/error');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const app = express();
 const ErrorHandler = require('./utils/ErrorHandler');
 
+const app = express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 // 1) MIDDLEWARES
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 //set Security Headers
 app.use(helmet());
@@ -29,9 +37,9 @@ const limiter = rateLimit({
 
 app.use('/api', limiter);
 app.use(express.json());
-app.use(express.static(`${__dirname}/public`));
 
 // 2) ROUTES
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
