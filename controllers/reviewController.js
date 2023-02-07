@@ -4,7 +4,7 @@ const Review = require('../models/reviewModel');
 const factory = require('./handlerFactory');
 
 exports.setTourUserId = (req, res, next) => {
-  console.log("here");
+  console.log("here")
   if (!req.body.tour) {
     req.body.tour = req.params.tourID;
   }
