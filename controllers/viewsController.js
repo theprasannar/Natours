@@ -2,6 +2,7 @@ const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const Tour = require('../models/tourModel');
 const ErrorHandler = require('../utils/ErrorHandler');
 exports.getOverview = catchAsyncErrors(async (req, res, next) => {
+  console.log("snojnojn")
   const tours = await Tour.find();
   res.status(200).render('overview', {
     title: 'All Tours',

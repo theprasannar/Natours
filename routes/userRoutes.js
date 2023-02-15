@@ -6,6 +6,7 @@ const {
   resetPassword,
   updatePassword,
   isAuthenticatedUser,
+  logOut,
 } = require('../controllers/authController');
 const {
   getAllUsers,
@@ -22,6 +23,7 @@ const router = express.Router();
 
 router.route('/signup').post(signUp);
 router.route('/login').post(logIn);
+router.route('/logout').get(logOut);
 router.route('/forgotPassword').post(forgotPassword);
 router.route('/resetPassword/:token').patch(resetPassword);
 

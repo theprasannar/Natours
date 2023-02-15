@@ -39,6 +39,16 @@ exports.logIn = catchAsyncErrors(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
+exports.logOut = catchAsyncErrors(async (req,res,next) => {
+  res.cookie('token',null,{
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  })
+  res.status(200).json({
+    success: true,
+    message: "Logged Out Successfully",
+  });
+});
 //Authentication middlewares
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
   //get Authorization key from the header
@@ -48,6 +58,10 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  }
+  //we can also authenticate user by cookies and not only using authorization header
+  else if (req.cookies.token) {
+    token = req.cookies.token;
   }
 
   if (!token) {
@@ -84,6 +98,33 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
   next();
 });
 
+
+//Only for rendered pages and there will be no errors.
+exports.isLoggedIn = catchAsyncErrors(async (req, res, next) => {
+  console.log("sduuihi")
+  if (req.cookies.token) {
+    const decodedData = await promisify(jwt.verify)(
+      req.cookies.token,
+      process.env.JWT_SECRET_KEY
+    );
+    let currentUser = await User.findById(decodedData.id);
+
+    if (!currentUser) {
+      return next();
+    }
+    // 4) Check if user changed password after the token was issued
+    let flag = currentUser.changedPasswordAfter(decodedData.iat);
+    if (flag) {
+      return next();
+    }
+
+    // GRANT ACCESS TO PROTECTED ROUTE
+    console.log("lamd")
+    res.locals.user = currentUser;
+    return next();
+  }
+  next()
+});
 exports.authorizdRole = (...roles) => {
   return (req, res, next) => {
     //roles is an array. it is available because of closure

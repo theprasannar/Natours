@@ -1,15 +1,24 @@
 const ErrorHandler = require('../utils/errorhandler');
 
-const sendDevErrors = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    err: err,
-    message: err.message,
-    stack: err.stack,
-  });
+const sendDevErrors = (err, req, res) => {
+  // API
+  if(req.originalUrl.startsWith('/api')){
+    res.status(err.statusCode).json({
+      status: err.status,
+      err: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  }else{
+    // Rendered website errors
+    res.status(err.statusCode).render('error',{
+     title: 'Something went wrong!',
+     msg: err.message
+    });
+  }
 };
 
-const sendProdErrors = (err, res) => {
+const sendProdErrors = (err, req, res) => {
   if (err.isOperationalError) {
     res.status(err.statusCode).json({
       status: err.status,
@@ -28,7 +37,7 @@ module.exports = (err, req, res, next) => {
   err.message = err.message || 'internal server error';
 
   if (process.env.NODE_ENV === 'development') {
-    sendDevErrors(err, res);
+    sendDevErrors(err, req ,res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = err;
     if (err.name === 'CastError') {
